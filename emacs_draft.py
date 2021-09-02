@@ -22,10 +22,14 @@ source_window = None
 #   (gui-set-selection 'CLIPBOARD (buffer-substring-no-properties (point-min) (point-max))))
 # '''
 
-# This seems to work more reliably than emacs' built in clipboard commands. :(
+# `xsel` seems to work more reliably than Emacs' built in clipboard commands. :(
+# Prefer it, but fall back on e.g. Windows.
 lisp_copy_draft = '''
 (with-current-buffer "*Draft*"
-  (shell-command-on-region (point-min) (point-max) "xsel -ib"))
+  (if (executable-find "xsel")
+      (shell-command-on-region (point-min) (point-max) "xsel -ib")
+    (gui-select-text (buffer-substring-no-properties (point-min) (point-max)))
+    (sleep-for 0.5)))
 '''
 
 lisp_edit_empty = """
